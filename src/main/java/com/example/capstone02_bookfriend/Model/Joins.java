@@ -11,18 +11,21 @@ import org.hibernate.annotations.Check;
 
 @Data
 @AllArgsConstructor
-@NoArgsConstructor
 @Entity
-public class Publisher {
+@NoArgsConstructor
+public class Joins {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
-    @NotEmpty(message = "type cannot be empty")
-    @Pattern(regexp = "^(normal|vip)$",message = "type should be ('normal' or 'vip')")
-    @Column(columnDefinition = "varchar(6) not null")
-    @Check(constraints = "type='normal' or type='vip'")
-    private String type; // normal | vip
+    @NotEmpty(message = "state cannot be empty")
+    @Pattern(regexp = "^(joined|withdrawn)$",message = "state should be ('joined' or 'withdrawn')")
+    @Column(columnDefinition = "varchar(10) not null")
+    @Check(constraints = "state='joined' or state='withdrawn'")
+    private String state; // joined / withdrawn
+    @NotNull(message = "group id cannot be null")
+    @Column(columnDefinition = "int not null")
+    private Integer group_id;
     @NotNull(message = "user id cannot be null")
     @Column(columnDefinition = "int not null")
     private Integer user_id;
