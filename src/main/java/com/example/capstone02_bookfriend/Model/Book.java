@@ -36,6 +36,8 @@ public class Book {
     @Column(columnDefinition = "double not null")
     @Check(constraints = "price>=0.0")
     private Double price = 0.0;
+    @Column(columnDefinition = "int not null")
+    private Integer stock=0;
     @Column(columnDefinition = "date not null")
     private LocalDate publish_date;
     @NotNull(message = "publisher cannot be null")

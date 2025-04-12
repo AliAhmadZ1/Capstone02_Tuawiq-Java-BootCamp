@@ -58,6 +58,7 @@ public class BookService {
         oldBook.setTitle(book.getTitle());
         oldBook.setCategory_id(book.getCategory_id());
         oldBook.setPublisher_id(book.getPublisher_id());
+        oldBook.setStock(book.getStock());
         bookRepository.save(oldBook);
         return true;
     }
