@@ -51,5 +51,26 @@ public class UserController {
         return ResponseEntity.status(400).body(new ApiResponse("not found"));
     }
 
+    // endpoint 1
+    @PutMapping("/join/{id},{group_id}")
+    public ResponseEntity joinGroup(@PathVariable Integer id, @PathVariable Integer group_id){
+        boolean isJoined = userService.joinGroup(id, group_id);
+        if (isJoined)
+            return ResponseEntity.status(200).body(new ApiResponse("you are joined successfully"));
+        return ResponseEntity.status(400).body(new ApiResponse("this user or group not found"));
+    }
+
+    // endpoint 2
+    @PostMapping("/purchase/{id},{book_id}")
+    public ResponseEntity purchaseBook(@PathVariable Integer id,@PathVariable Integer book_id){
+        String purchased = userService.purchaseBook(id, book_id);
+        if (purchased.equals("not found"))
+            return ResponseEntity.status(400).body(new ApiResponse("user or book not found"));
+        if (purchased.equals("price"))
+            return ResponseEntity.status(400).body(new ApiResponse("your balance is not enough for this price"));
+        if (purchased.equals("stock"))
+            return ResponseEntity.status(400).body(new ApiResponse("book is out of stock"));
+        return ResponseEntity.status(200).body(new ApiResponse("purchased is done"));
+    }
 
 }
