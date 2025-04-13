@@ -33,8 +33,12 @@ public class UserService {
     public Boolean updateUser(Integer id, User user) {
         User checkEmail = userRepository.findUserByEmail(user.getEmail());
         User oldUser = userRepository.findUserById(id);
-        if (checkEmail != null || oldUser == null)
+        if (oldUser == null)
             return false;
+        if (checkEmail!=null) {
+            if (!oldUser.getEmail().equals(user.getEmail()))
+                return false;
+        }
 
         oldUser.setBalance(user.getBalance());
         oldUser.setName(user.getName());
@@ -58,11 +62,11 @@ public class UserService {
         Groups groups = groupRepository.findGroupById(group_id);
         User user = userRepository.findUserById(id);
         Joins joins = new Joins();
-        Joins checkJoin = joinRepository.findJoinsByGroup_idAndUser_id(group_id,id);
-        if (groups == null || user == null )
+        Joins checkJoin = joinRepository.findJoinsByGroup_idAndUser_id(group_id, id);
+        if (groups == null || user == null)
             return false;
         else {
-            if (checkJoin!=null)
+            if (checkJoin != null)
                 if (checkJoin.getState().equals("joined"))
                     return false;
             if (groups.getMax_capacity() == groups.getNumber_of_users())
@@ -75,10 +79,10 @@ public class UserService {
         joins.setState("joined");
         groups.setNumber_of_users(groups.getNumber_of_users() + 1);
         user.setGroup_id(group_id);
-        if (checkJoin!=null){
+        if (checkJoin != null) {
             checkJoin.setState("joined");
             joinRepository.save(checkJoin);
-        }else
+        } else
             joinRepository.save(joins);
         groupRepository.save(groups);
         userRepository.save(user);
@@ -103,7 +107,7 @@ public class UserService {
         orders.setTotal_price(totalPrice);
         orders.setBook_id(book_id);
         orders.setUser_id(id);
-        orders.setState("completed");
+        orders.setState("in progress");
         orderRepository.save(orders);
         userRepository.save(user);
         bookRepository.save(book);
@@ -116,14 +120,18 @@ public class UserService {
         Orders orders = orderRepository.findOrderById(order_id);
         if (user == null)
             return false;
-        if (orders != null && orders.getUser_id() == user.getId() && orders.getState().equals("completed")) {
+        if (orders != null && orders.getUser_id() == user.getId() && !orders.getState().equals("returned")) {
             Book book = bookRepository.findBooksById(orders.getBook_id());
+            Publisher getPublisher = userRepository.findPublisherById(book.getPublisher_id());
+            User publisher = userRepository.findUserById(getPublisher.getUser_id());
             double price = orders.getTotal_price() - (book.getPrice() * 0.15);
             user.setBalance(user.getBalance() + price);
             book.setStock(book.getStock() + 1);
             orders.setState("returned");
+            publisher.setBalance(publisher.getBalance()-price);
             orderRepository.save(orders);
             userRepository.save(user);
+            userRepository.save(publisher);
             bookRepository.save(book);
             return true;
         }
@@ -135,7 +143,7 @@ public class UserService {
         Groups groups = groupRepository.findGroupById(group_id);
         User user = userRepository.findUserById(id);
         Joins joins = joinRepository.findJoinsByGroup_idAndUser_id(group_id, id);
-        if (joins == null||groups == null || user == null||!joins.getState().equals("joined"))
+        if (joins == null || groups == null || user == null || !joins.getState().equals("joined"))
             return false;
 
         joins.setState("withdrawn");
@@ -145,6 +153,29 @@ public class UserService {
         userRepository.save(user);
         joinRepository.save(joins);
         return true;
+    }
+
+    // endpoint 5
+    public String signAsPublisher(Integer id, String type) {
+        User user = userRepository.findUserById(id);
+        Publisher publisher = new Publisher();
+        if (user == null || user.getRole().equals("publisher"))
+            return "not found";
+        publisher.setUser_id(id);
+        if (type.equals("normal"))
+            publisher.setType("normal");
+        else if (type.equals("vip")) {
+            publisher.setType("vip");
+            if (user.getBalance() >= 10)
+                user.setBalance(user.getBalance() - 10);
+            else
+                return "price";
+        } else
+            return "type";
+        user.setRole("publisher");
+        publisherRepository.save(publisher);
+        userRepository.save(user);
+        return "done";
     }
 
 }
