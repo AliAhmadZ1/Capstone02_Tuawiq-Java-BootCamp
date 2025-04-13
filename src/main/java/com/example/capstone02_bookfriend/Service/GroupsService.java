@@ -1,7 +1,13 @@
 package com.example.capstone02_bookfriend.Service;
 
 import com.example.capstone02_bookfriend.Model.Groups;
+import com.example.capstone02_bookfriend.Model.Joins;
+import com.example.capstone02_bookfriend.Model.Reading;
+import com.example.capstone02_bookfriend.Model.User;
 import com.example.capstone02_bookfriend.Repository.GroupRepository;
+import com.example.capstone02_bookfriend.Repository.JoinRepository;
+import com.example.capstone02_bookfriend.Repository.ReadingRepository;
+import com.example.capstone02_bookfriend.Repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -12,6 +18,10 @@ import java.util.List;
 public class GroupsService {
 
     private final GroupRepository groupRepository;
+    private final ReadingRepository readingRepository;
+    private final UserRepository userRepository;
+    private final JoinRepository joinRepository;
+
 
     public List<Groups> getAllgroups() {
         return groupRepository.findAll();
@@ -47,6 +57,27 @@ public class GroupsService {
             return false;
         groupRepository.delete(groups);
         return true;
+    }
+
+    // endpoint 15
+    public Boolean reviewedBook(Integer id, Integer user_id){
+        User leader = userRepository.findUserById(id);
+        User user = userRepository.findUserById(user_id);
+        if (leader==null||user==null)
+            return false;
+        Groups groups = groupRepository.findGroupsByUser_id(id);
+        if (groups==null)
+            return false;
+        Joins joins = joinRepository.findJoinsByGroup_idAndUser_id(groups.getId(), user_id);
+        Reading reading = readingRepository.findReadingByBook_idAndUser_id(groups.getBook_id(), user_id);
+        if (joins==null||reading==null)
+            return false;
+        if (reading.getState().equals("done")){
+            reading.setState("reviewed");
+            readingRepository.save(reading);
+            return true;
+        }
+        return false;
     }
 
 }

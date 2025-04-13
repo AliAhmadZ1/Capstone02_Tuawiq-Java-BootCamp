@@ -51,5 +51,14 @@ public class GroupsController {
         return ResponseEntity.status(400).body(new ApiResponse("not found"));
     }
 
+    // endpoint 15
+    @PutMapping("/reviewed/{id},{user_id}")
+    public ResponseEntity reviewedBook(@PathVariable Integer id, @PathVariable Integer user_id){
+        boolean isReviewed = groupsService.reviewedBook(id, user_id);
+        if (isReviewed)
+            return ResponseEntity.status(200).body(new ApiResponse("user finish reviewed"));
+        return ResponseEntity.status(400).body(new ApiResponse("not found or not finish reading"));
+    }
+
 
 }
