@@ -16,4 +16,7 @@ public interface GroupRepository extends JpaRepository<Groups,Integer> {
 //    @Query("select g from Groups g where g.id=?1")
 //    Groups findGroupsByMax_capacity(Integer id);
 
+    @Query("select g from Groups g where g.user_id=?1")
+    Groups findGroupsByUser_id(Integer user_id);
+
 }
