@@ -8,6 +8,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.Errors;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.config.annotation.InterceptorRegistration;
 
 @RestController
 @RequiredArgsConstructor
@@ -49,6 +50,24 @@ public class PublisherController {
         if (isDeleted)
             return ResponseEntity.status(200).body(new ApiResponse("is deleted"));
         return ResponseEntity.status(400).body(new ApiResponse("not found"));
+    }
+
+    //endpoint 6
+    @PutMapping("/add-stock/{user_id},{book_id},{stock}")
+    public ResponseEntity addStock(@PathVariable Integer user_id,@PathVariable Integer book_id,@PathVariable Integer stock){
+        boolean isStocked = publisherService.addStock(user_id, book_id, stock);
+        if (isStocked)
+            return ResponseEntity.status(200).body(new ApiResponse("book stocked done!!"));
+        return ResponseEntity.status(400).body(new ApiResponse("book or publisher not found"));
+    }
+
+    // endpoint 7
+    @PutMapping("/checkout-order/{id},{order_id}")
+    public ResponseEntity checkoutOrder(@PathVariable Integer id, @PathVariable Integer order_id){
+        boolean isCompleted = publisherService.checkoutOrder(id, order_id);
+        if (isCompleted)
+            return ResponseEntity.status(200).body(new ApiResponse("order is completed"));
+        return ResponseEntity.status(400).body(new ApiResponse("publisher or order not found. Or publisher and order not related or order is already completed"));
     }
 
 
