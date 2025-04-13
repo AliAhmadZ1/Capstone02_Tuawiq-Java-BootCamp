@@ -13,5 +13,7 @@ public interface OrderRepository extends JpaRepository<Orders,Integer> {
     @Query("select o from Orders o where o.book_id=?1 and o.user_id=?2")
     Orders findOrdersByBook_idAndUser_id(Integer book_id, Integer user_id);
 
+    @Query("select o from Orders o where o.book_id=?1")
+    Orders findOrdersByBook_id(Integer book_id);
 
 }
