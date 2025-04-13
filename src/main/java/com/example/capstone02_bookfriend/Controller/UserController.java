@@ -57,7 +57,7 @@ public class UserController {
         boolean isJoined = userService.joinGroup(id, group_id);
         if (isJoined)
             return ResponseEntity.status(200).body(new ApiResponse("you are joined successfully"));
-        return ResponseEntity.status(400).body(new ApiResponse("this user or group not found"));
+        return ResponseEntity.status(400).body(new ApiResponse("this user or group not found or already joined"));
     }
 
     // endpoint 2
@@ -72,5 +72,24 @@ public class UserController {
             return ResponseEntity.status(400).body(new ApiResponse("book is out of stock"));
         return ResponseEntity.status(200).body(new ApiResponse("purchased is done"));
     }
+
+    // endpoint 3
+    @PutMapping("/return-book/{id},{order_id}")
+    public ResponseEntity returnBook(@PathVariable Integer id, @PathVariable Integer order_id){
+        boolean isReturned = userService.returnBook(id, order_id);
+        if (isReturned)
+            return ResponseEntity.status(200).body(new ApiResponse("your book is return"));
+        return ResponseEntity.status(400).body(new ApiResponse("user or order not found or it is not your order or already returned"));
+    }
+
+    // endpoint 4
+    @PutMapping("/leave/{id},{group_id}")
+    public ResponseEntity leaveGroup(@PathVariable Integer id, @PathVariable Integer group_id){
+        boolean isLeaved = userService.leaveGroup(id, group_id);
+        if (isLeaved)
+            return ResponseEntity.status(200).body(new ApiResponse("Withdrawn is done"));
+        return ResponseEntity.status(400).body(new ApiResponse("this user or group not found or already leaved"));
+    }
+
 
 }
