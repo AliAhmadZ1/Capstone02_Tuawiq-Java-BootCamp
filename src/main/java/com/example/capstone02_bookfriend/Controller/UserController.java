@@ -105,5 +105,72 @@ public class UserController {
 
     }
 
+    // endpoint 8
+    @PostMapping("/add-to-cert/{id},{book_id}")
+    public ResponseEntity addToCert(@PathVariable Integer id,@PathVariable Integer book_id){
+        boolean isAdded = userService.addToCert(id, book_id);
+        if (isAdded)
+            return ResponseEntity.status(200).body(new ApiResponse("book is added to cert"));
+        return ResponseEntity.status(400).body(new ApiResponse("user or book nor found or out of stock"));
+    }
+    // endpoint 9
+    @PutMapping("/remove-from-cert/{id},{book_id},{removeAll}")
+    public ResponseEntity removeFromCert(@PathVariable Integer id,@PathVariable Integer book_id, @PathVariable Boolean removeAll){
+        boolean isRemoved = userService.addToCert(id, book_id);
+        if (isRemoved)
+            return ResponseEntity.status(200).body(new ApiResponse("is removed from cert"));
+        return ResponseEntity.status(400).body(new ApiResponse("cert not found "));
+    }
+
+    // endpoint 10
+    @PostMapping("/purchase-cert/{id}")
+    public ResponseEntity purchaseCert(@PathVariable Integer id) {
+        String purchased = userService.purchaseCert(id);
+        if (purchased.equals("not found"))
+            return ResponseEntity.status(400).body(new ApiResponse("user not found"));
+        if (purchased.equals("empty"))
+            return ResponseEntity.status(400).body(new ApiResponse("this cert is empty"));
+        if (purchased.equals("stock"))
+            return ResponseEntity.status(400).body(new ApiResponse("book is out of stock"));
+        if (purchased.equals("price"))
+            return ResponseEntity.status(400).body(new ApiResponse("user balance is not enough"));
+        return ResponseEntity.status(200).body(new ApiResponse("purchase request is sent"));
+    }
+
+    // endpoint 11
+    @PutMapping("/deposit/{id},{amount}")
+    public ResponseEntity deposit(@PathVariable Integer id,@PathVariable Double amount){
+        boolean isDeposited = userService.deposit(id, amount);
+        if (isDeposited)
+            return ResponseEntity.status(200).body(new ApiResponse("deposited successfully"));
+        return ResponseEntity.status(400).body(new ApiResponse("user not found"));
+    }
+
+    // endpoint 12
+    @PutMapping("/withdraw-balance/{id},{amount}")
+    public ResponseEntity withdrawBalance(@PathVariable Integer id,@PathVariable Double amount){
+        boolean isWithdrawn = userService.deposit(id, amount);
+        if (isWithdrawn)
+            return ResponseEntity.status(200).body(new ApiResponse("withdrawn balance successfully"));
+        return ResponseEntity.status(400).body(new ApiResponse("user not found or balance less than amount"));
+    }
+
+    // endpoint 13
+    @PostMapping("/read/{id}")
+    public ResponseEntity startReading(@PathVariable Integer id){
+        boolean isStart = userService.startReading(id);
+        if (isStart)
+            return ResponseEntity.status(200).body(new ApiResponse("reading is started"));
+        return ResponseEntity.status(400).body(new ApiResponse("not found or not joined to group"));
+    }
+
+    // endpoint 14
+    @PutMapping("/finish-reading/{id},{book_id}")
+    public ResponseEntity finishReading(@PathVariable Integer id,@PathVariable Integer book_id){
+        boolean isFinished = userService.finishReading(id, book_id);
+        if (isFinished)
+            return ResponseEntity.status(200).body(new ApiResponse("reading is finished"));
+        return ResponseEntity.status(400).body(new ApiResponse("not found or not allowed finish reading at same day of starting"));
+    }
 
 }

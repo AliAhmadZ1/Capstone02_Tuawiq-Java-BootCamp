@@ -5,6 +5,7 @@ import com.example.capstone02_bookfriend.Repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @Service
@@ -17,6 +18,8 @@ public class UserService {
     private final PublisherRepository publisherRepository;
     private final OrderRepository orderRepository;
     private final JoinRepository joinRepository;
+    private final CertRepository certRepository;
+    private final ReadingRepository readingRepository;
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
@@ -177,5 +180,135 @@ public class UserService {
         userRepository.save(user);
         return "done";
     }
+
+    // endpoint 8
+    public Boolean addToCert(Integer id,Integer book_id){
+        User user = userRepository.findUserById(id);
+        Book book = bookRepository.findBooksById(book_id);
+        Cert cert = new Cert();
+        Cert existCert = certRepository.findCertByUser_idAndBook_id(id, book_id);
+        if (user==null||book==null)
+            return false;
+        if (book.getStock()>cert.getAmount()) {
+            if (existCert != null) {
+                existCert.setAmount(existCert.getAmount() + 1);
+                certRepository.save(existCert);
+                return true;
+            }
+            cert.setAmount(1);
+            cert.setUser_id(id);
+            cert.setBook_id(book_id);
+            certRepository.save(cert);
+            return true;
+        }
+        return false;
+    }
+
+    // endpoint 9
+    public Boolean removeFromCert(Integer id, Integer book_id, Boolean removeAll){
+        Cert cert = certRepository.findCertByUser_idAndBook_id(id, book_id);
+        if (cert==null)
+            return false;
+        if (removeAll||cert.getAmount()==1) {
+            certRepository.delete(cert);
+            return true;
+        }
+
+        cert.setAmount(cert.getAmount()-1);
+        certRepository.save(cert);
+        return true;
+    }
+
+    // endpoint 10
+    public String purchaseCert(Integer id){
+        User user = userRepository.findUserById(id);
+        List<Cert> certs = certRepository.findCertsByUserId(id);
+        Orders orders = new Orders();
+
+        if (user==null)
+            return "not found";
+        if (certs.isEmpty())
+            return "empty";
+
+        for (Cert c:certs){
+            Book book = bookRepository.findBooksById(c.getBook_id());
+            if (book.getStock()==0)
+                return "stock";
+
+            double totalPrice = ((book.getPrice() * 0.15) + book.getPrice())*c.getAmount();
+            book.setStock(book.getStock() - c.getAmount());
+            orders.setTotal_price(totalPrice);
+            orders.setUser_id(id);
+            orders.setBook_id(book.getId());
+            orders.setState("in progress");
+            orderRepository.save(orders);
+
+            if (user.getBalance() < totalPrice)
+                return "price";
+            user.setBalance(user.getBalance()-totalPrice);
+            userRepository.save(user);
+        }
+        return "purchased";
+    }
+
+    // endpoint 11
+    public Boolean deposit(Integer id,Double amount){
+        User user = userRepository.findUserById(id);
+        if (user==null)
+            return false;
+        user.setBalance(user.getBalance()+amount);
+        userRepository.save(user);
+        return true;
+    }
+
+    // endpoint 12
+    public Boolean withdrawBalance(Integer id,Double amount){
+        User user = userRepository.findUserById(id);
+        if (user==null)
+            return false;
+        if (user.getBalance()>=amount) {
+            user.setBalance(user.getBalance() - amount);
+            userRepository.save(user);
+            return true;
+        }
+        return false;
+    }
+
+    // endpoint 13
+    public Boolean startReading(Integer id){
+        User user = userRepository.findUserById(id);
+        Reading reading = new Reading();
+
+        if (user==null)
+            return false;
+        Groups groups = groupRepository.findGroupById(user.getGroup_id());
+        if (groups==null)
+            return false;
+        Joins joins = joinRepository.findJoinsByGroup_idAndUser_id(groups.getId(),id);
+        if (joins==null||joins.getState().equals("withdrawn"))
+            return false;
+        reading.setBook_id(groups.getBook_id());
+        reading.setUser_id(id);
+        reading.setState("start");
+        reading.setReadingStart(LocalDate.now());
+        readingRepository.save(reading);
+        return true;
+    }
+
+    // endpoint 14
+    // to sign user reading state as finish reading book at least one day after start reading
+    public Boolean finishReading(Integer id, Integer book_id){
+        Reading reading = readingRepository.findReadingByBook_idAndUser_id(book_id,id);
+        if (reading==null||reading.getState().equals("done"))
+            return false;
+        if (reading.getReadingStart().isBefore(LocalDate.now())){
+            reading.setState("done");
+            reading.setReadingFinish(LocalDate.now());
+            readingRepository.save(reading);
+            return true;
+        }
+        return false;
+    }
+
 
 }
