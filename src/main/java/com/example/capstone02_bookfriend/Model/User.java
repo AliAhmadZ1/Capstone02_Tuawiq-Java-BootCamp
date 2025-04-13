@@ -30,9 +30,9 @@ public class User {
     @Check(constraints = "length(password)>=8 and length(password)<=16")
     private String password;
     @NotEmpty(message = "role cannot be empty")
-    @Pattern(regexp = "^(user|admin)$",message = "role should be ('user' or 'admin')")
-    @Column(columnDefinition = "varchar(5) not null")
-    @Check(constraints = "role='user' or role='admin'")
+    @Pattern(regexp = "^(user|admin|publisher)$",message = "role should be ('user' or 'admin' or 'publisher')")
+    @Column(columnDefinition = "varchar(9) not null")
+    @Check(constraints = "role='user' or role='admin' or 'publisher'")
     private String role;
     @NotNull(message = "balance cannot be null")
     @Column(columnDefinition = "double not null")
