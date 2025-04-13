@@ -2,8 +2,6 @@ package com.example.capstone02_bookfriend.Repository;
 
 import com.example.capstone02_bookfriend.Model.Publisher;
 import com.example.capstone02_bookfriend.Model.User;
-import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotEmpty;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;

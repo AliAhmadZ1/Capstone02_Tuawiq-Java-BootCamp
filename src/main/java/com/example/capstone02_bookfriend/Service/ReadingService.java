@@ -1,7 +1,6 @@
 package com.example.capstone02_bookfriend.Service;
 
 import com.example.capstone02_bookfriend.Model.Book;
-import com.example.capstone02_bookfriend.Model.Groups;
 import com.example.capstone02_bookfriend.Model.Reading;
 import com.example.capstone02_bookfriend.Model.User;
 import com.example.capstone02_bookfriend.Repository.BookRepository;

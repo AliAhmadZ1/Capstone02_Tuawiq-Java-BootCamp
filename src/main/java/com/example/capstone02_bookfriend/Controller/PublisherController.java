@@ -70,5 +70,4 @@ public class PublisherController {
         return ResponseEntity.status(400).body(new ApiResponse("publisher or order not found. Or publisher and order not related or order is already completed"));
     }
 
-
 }
