@@ -9,6 +9,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.Check;
 
+import java.time.LocalDate;
+
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
@@ -19,9 +21,9 @@ public class Reading {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     @NotEmpty(message = "state cannot be empty")
-    @Pattern(regexp = "^(done|still|interviewed)$",message = "state should be (done | still | interviewed)")
-    @Column(columnDefinition = "varchar(12) not null")
-    @Check(constraints = "state='done' or state='still' or state='interviewed'")
+    @Pattern(regexp = "^(done|start|reviewed)$",message = "state should be (done | still | reviewed)")
+    @Column(columnDefinition = "varchar(8) not null")
+    @Check(constraints = "state='done' or state='still' or state='reviewed'")
     private String state; // done | still | interviewed
     @NotNull(message = "book id cannot be null")
     @Column(columnDefinition = "int not null")
@@ -29,5 +31,9 @@ public class Reading {
     @NotNull(message = "user id cannot be null")
     @Column(columnDefinition = "int not null")
     private Integer user_id;
+    @Column(columnDefinition = "date")
+    private LocalDate readingStart;
+    @Column(columnDefinition = "date")
+    private LocalDate readingFinish;
 
 }
