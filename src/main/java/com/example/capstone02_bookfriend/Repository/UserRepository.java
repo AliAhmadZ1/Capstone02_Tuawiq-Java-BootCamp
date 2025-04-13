@@ -1,5 +1,6 @@
 package com.example.capstone02_bookfriend.Repository;
 
+import com.example.capstone02_bookfriend.Model.Publisher;
 import com.example.capstone02_bookfriend.Model.User;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotEmpty;
@@ -20,4 +21,7 @@ public interface UserRepository extends JpaRepository<User,Integer> {
     User checkAdminRole(Integer id);
 
     User findUserByEmail(String email);
+
+    @Query("select p from Publisher p where p.id=?1")
+    Publisher findPublisherById(Integer publisher_id);
 }
