@@ -33,7 +33,7 @@ public class User {
     @Pattern(regexp = "^(user|admin|publisher)$",message = "role should be ('user' or 'admin' or 'publisher')")
     @Column(columnDefinition = "varchar(9) not null")
     @Check(constraints = "role='user' or role='admin' or 'publisher'")
-    private String role;
+    private String role="user";
     @NotNull(message = "balance cannot be null")
     @Column(columnDefinition = "double not null")
     private Double balance=0.0;

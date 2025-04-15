@@ -149,7 +149,7 @@ public class UserController {
     // endpoint 12
     @PutMapping("/withdraw-balance/{id},{amount}")
     public ResponseEntity withdrawBalance(@PathVariable Integer id,@PathVariable Double amount){
-        boolean isWithdrawn = userService.deposit(id, amount);
+        boolean isWithdrawn = userService.withdrawBalance(id, amount);
         if (isWithdrawn)
             return ResponseEntity.status(200).body(new ApiResponse("withdrawn balance successfully"));
         return ResponseEntity.status(400).body(new ApiResponse("user not found or balance less than amount"));
