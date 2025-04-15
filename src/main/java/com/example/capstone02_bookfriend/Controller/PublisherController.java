@@ -70,4 +70,12 @@ public class PublisherController {
         return ResponseEntity.status(400).body(new ApiResponse("publisher or order not found. Or publisher and order not related or order is already completed"));
     }
 
+    // endpoint 16
+    @PutMapping("/add-offer/{id},{percent}")
+    public ResponseEntity addOffer(@PathVariable Integer id, @PathVariable Double percent){
+        boolean isAdded = publisherService.addOffer(id, percent);
+        if (isAdded)
+            return ResponseEntity.status(200).body(new ApiResponse("new Offer is added"));
+        return ResponseEntity.status(400).body(new ApiResponse("nof found or percent is not applicable"));
+    }
 }

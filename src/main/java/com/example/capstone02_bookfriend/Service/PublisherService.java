@@ -83,4 +83,20 @@ public class PublisherService {
         return false;
     }
 
+    // endpoint 16
+    public Boolean addOffer(Integer id, Double percent){
+        Publisher publisher = publisherRepository.findPublisherById(id);
+        if (publisher==null)
+            return false;
+        List<Book> books = bookRepository.findBooksByPublisher_id(publisher.getId());
+        if (books.isEmpty()||percent>100)
+            return false;
+        for (Book b:books){
+            b.setPrice(b.getPrice()-(b.getPrice()*(percent/100)));
+            bookRepository.save(b);
+        }
+        return true;
+
+    }
+
 }
